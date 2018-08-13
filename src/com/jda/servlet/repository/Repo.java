@@ -24,8 +24,7 @@ public class Repo {
 			connect = DriverManager.getConnection("jdbc:mysql://10.0.0.160/db10007?" + "user=u10007&password=qqdDbor60y");
 
 			// PreparedStatements can use variables and are more efficient
-			preparedStatement = connect
-			      .prepareStatement("insert into  db10007.userdata values (?, ?, ?, ? )");
+			preparedStatement = connect.prepareStatement("insert into  db10007.userdata values (?, ?, ?, ? )");
 			// "myuser, webpage, datum, summary, COMMENTS from feedback.comments");
 			// Parameters start with 1
 			preparedStatement.setString(1, user.getName());
@@ -41,29 +40,69 @@ public class Repo {
 		}
 
 	}
-	public boolean checkDatabase(String  email,String password) throws ClassNotFoundException, SQLException
-	{
+
+	public boolean checkDatabase(String email, String password) throws ClassNotFoundException, SQLException {
 		Class.forName("com.mysql.cj.jdbc.Driver");
 		// Setup the connection with the DB
 		connect = DriverManager.getConnection("jdbc:mysql://10.0.0.160/db10007?" + "user=u10007&password=qqdDbor60y");
-     statement=connect.createStatement();
-     resultSet=statement.executeQuery(" select * from  db10007.userdata where email='"+email+"';");
-     if(resultSet.next())
-     {
-     if(resultSet.getString(3).equals(password))
-     {
-   	  System.out.println("right pasword");
-   	  return true;
-     }
-     else
-     {
-   	  System.out.println("wrong password");
-   	  return false;
-     }
-     }
-     return false;
-     
-		
+		statement = connect.createStatement();
+		resultSet = statement.executeQuery(" select * from  db10007.userdata where email='" + email + "';");
+		if (resultSet.next()) {
+			if (resultSet.getString(3).equals(password)) {
+				System.out.println("right pasword");
+				return true;
+			} else {
+				System.out.println("wrong password");
+				return false;
+			}
+		}
+		return false;
+
+	}
+
+	/*
+	 * public String getUsername(String email, String password) throws
+	 * ClassNotFoundException, SQLException {
+	 * Class.forName("com.mysql.cj.jdbc.Driver"); // Setup the connection with
+	 * the DB connect =
+	 * DriverManager.getConnection("jdbc:mysql://10.0.0.160/db10007?" +
+	 * "user=u10007&password=qqdDbor60y"); statement = connect.createStatement();
+	 * resultSet =
+	 * statement.executeQuery(" select * from  db10007.userdata where email='" +
+	 * email + "';"); if (resultSet.next()) { if
+	 * (resultSet.getString(3).equals(password)) {
+	 * System.out.println("right pasword"); return resultSet.getString(1); } else
+	 * { System.out.println("wrong password"); return "wrong"; } }
+	 * 
+	 * return "notfound";
+	 * 
+	 * }
+	 */
+	public User getUser(String email, String password) throws ClassNotFoundException, SQLException {
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		// Setup the connection with the DB
+		connect = DriverManager.getConnection("jdbc:mysql://10.0.0.160/db10007?" + "user=u10007&password=qqdDbor60y");
+		statement = connect.createStatement();
+		resultSet = statement.executeQuery(" select * from  db10007.userdata where email='" + email + "';");
+		if (resultSet.next()) {
+			if (resultSet.getString(3).equals(password)) {
+				return createUser(resultSet);
+			} else {
+				return null;
+			}
+		}
+		return null;
+
+	}
+
+	public User createUser(ResultSet resultSet) throws SQLException {
+		User user = new User();
+		user.setName(resultSet.getString(1));
+		user.setEmail(resultSet.getString(2));
+		user.setPassword(resultSet.getString(3));
+		user.setPhonenumber(resultSet.getString(4));
+		return user;
+
 	}
 
 	private void close() {

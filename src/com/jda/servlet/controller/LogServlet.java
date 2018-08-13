@@ -3,12 +3,18 @@ package com.jda.servlet.controller;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import com.jda.model.User;
 import com.jda.servlet.repository.Repo;
+
+
 
 /**
  * Servlet implementation class LogServlet
@@ -25,13 +31,7 @@ public class LogServlet extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-	}
+	
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
@@ -39,7 +39,7 @@ public class LogServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String email = request.getParameter("email");
-		String password = request.getParameter("pass");
+		String password = request.getParameter("password");
 		Repo rep=new Repo();
 		boolean bool;
 		try {
@@ -47,11 +47,15 @@ public class LogServlet extends HttpServlet {
 			if(bool)
 		    {
 		   	 System.out.println("success");
-		   	 
-		   	 response.sendRedirect("home.html");
+		   	 User user=rep.getUser(email, password);
+		   	 System.out.println(user.getName());
+		   	HttpSession session=request.getSession();  
+		   	 session.setAttribute("user", user);
+		        //RequestDispatcher req=request.getRequestDispatcher("home");
+			     //req.include(request, response);
+		   	 response.sendRedirect("home");
 		    }
 		} catch (ClassNotFoundException | SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	    
